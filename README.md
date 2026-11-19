@@ -42,6 +42,7 @@ dsh plugin --profile web add github:jackhoog/dsh-model-shift
 ```sh
 node --test test/          # 时段引擎单测（无宿主依赖）
 node --check lib/client.js # 浏览器半的语法检查
+pwsh -File scripts/sync.ps1 -Message "feat: xxx"   # 提交并推送到 origin
 ```
 
 目录：
