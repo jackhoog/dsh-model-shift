@@ -96,3 +96,38 @@ test('normalizeSchedule clamps values and falls back when every rule is invalid'
   assert.equal(ok.schedule.tickSeconds, 3600)
   assert.equal(ok.schedule.timeZone, 'UTC')
 })
+
+test('chaining moves a later rule start onto the previous end', () => {
+  const { schedule } = normalizeSchedule({
+    rules: [
+      { id: 'day', provider: 'p', model: 'm1', days: [0, 1, 2, 3, 4, 5, 6], windows: [{ start: '08:00', end: '23:00' }] },
+      { id: 'night', provider: 'p', model: 'm2', days: [0, 1, 2, 3, 4, 5, 6], windows: [{ start: '23:30', end: '08:00' }] },
+    ],
+  })
+  assert.equal(schedule.chainWindows, true)
+  assert.equal(schedule.rules[1].windows[0].start, '23:00')
+  assert.equal(schedule.rules[1].windows[0].end, '08:00')
+})
+
+test('chaining uses the last window end of a multi-window rule', () => {
+  const { schedule } = normalizeSchedule({
+    rules: [
+      { id: 'a', provider: 'p', model: 'm1', days: [1], windows: [{ start: '08:00', end: '12:00' }, { start: '14:00', end: '18:00' }] },
+      { id: 'b', provider: 'p', model: 'm2', days: [1], windows: [{ start: '19:30', end: '23:00' }] },
+    ],
+  })
+  assert.equal(schedule.rules[1].windows[0].start, '18:00')
+  assert.equal(schedule.rules[0].windows[1].start, '14:00')
+})
+
+test('chaining can be turned off', () => {
+  const { schedule } = normalizeSchedule({
+    chainWindows: false,
+    rules: [
+      { id: 'a', provider: 'p', model: 'm1', days: [1], windows: [{ start: '08:00', end: '23:00' }] },
+      { id: 'b', provider: 'p', model: 'm2', days: [1], windows: [{ start: '23:30', end: '08:00' }] },
+    ],
+  })
+  assert.equal(schedule.chainWindows, false)
+  assert.equal(schedule.rules[1].windows[0].start, '23:30')
+})
