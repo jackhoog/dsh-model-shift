@@ -29,7 +29,8 @@ dsh plugin --profile web add github:jackhoog/dsh-model-shift
 
 1. 设置 → 模型排班，默认给了两条示例规则（08:00–23:00 官方、23:00–08:00 本地），按需修改 provider/model 与时段。
 2. 点「保存并应用」，之后到点自动切换；需要立刻对齐时点「立即切换」。
-3. provider 下拉框列出宿主注册的全部 provider，model 下拉框只列所选 provider 的模型。
+3. 输入框右侧的档位徽标可以点开：选好 provider/model 后，用「仅本会话使用」只切当前会话（本档内钉住），或用「写入当前档位」改规则并立即应用；也能一键暂停/恢复自动切换。
+4. provider 下拉框列出宿主注册的全部 provider，model 下拉框只列所选 provider 的模型。
 
 ## 配置与数据
 
