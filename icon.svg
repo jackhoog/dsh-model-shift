@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Model shift">
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="#1F6FB2"/>
+  <circle cx="29" cy="29" r="14.5" fill="none" stroke="#FFFFFF" stroke-width="3.4"/>
+  <path d="M29 20.5V29h8" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M39.5 39.5 45 45" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+  <rect x="43" y="43" width="14" height="14" rx="4" fill="#FFFFFF"/>
+  <rect x="47.5" y="47.5" width="5" height="5" rx="1.4" fill="#1F6FB2"/>
+</svg>

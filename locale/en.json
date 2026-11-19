@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Model shift",
+    "description": "Switch the default model on a weekday and time-of-day schedule, with availability probing and a context-window guard.",
+    "detail": "docs/DETAIL.md"
+  }
+}
