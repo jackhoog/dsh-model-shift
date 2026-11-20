@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   parseHHMM, formatHHMM, inWindow, localParts, matchRule, nextSwitchAt,
-  normalizeRules, normalizeSchedule, defaultSchedule,
+  normalizeRules, normalizeSchedule, defaultSchedule, decideSessionAction,
 } from '../lib/engine.js'
 
 const TZ = 'Asia/Shanghai'
@@ -130,4 +130,43 @@ test('chaining can be turned off', () => {
   })
   assert.equal(schedule.chainWindows, false)
   assert.equal(schedule.rules[1].windows[0].start, '23:30')
+})
+
+test('decideSessionAction respects a manual change only inside the same slot', () => {
+  const target = { provider: 'p', model: 'A' }
+  const manual = { provider: 'p', model: 'B' }
+
+  // Same slot, the user picked B after we set A: keep B.
+  assert.deepEqual(decideSessionAction({
+    slotChanged: false, current: manual, previous: 'p/A', target, explicitKey: null,
+  }), { action: 'keep', reason: '本档内被手动改过，保留用户选择' })
+
+  // Crossing into another slot: the schedule takes over again.
+  assert.deepEqual(decideSessionAction({
+    slotChanged: true, current: manual, previous: 'p/A', target, explicitKey: null,
+  }), { action: 'proceed' })
+
+  // Nothing changed: no-op path still proceeds (select of an equal choice is a no-op).
+  assert.deepEqual(decideSessionAction({
+    slotChanged: false, current: target, previous: 'p/A', target, explicitKey: null,
+  }), { action: 'proceed' })
+
+  // First observation after a restart has no baseline: proceed.
+  assert.deepEqual(decideSessionAction({
+    slotChanged: true, current: manual, previous: undefined, target, explicitKey: null,
+  }), { action: 'proceed' })
+})
+
+test('decideSessionAction keeps an explicit pin across slots', () => {
+  const target = { provider: 'p', model: 'A' }
+  const pinned = { provider: 'p', model: 'X' }
+
+  assert.deepEqual(decideSessionAction({
+    slotChanged: true, current: pinned, previous: 'p/X', target, explicitKey: 'p/X',
+  }), { action: 'keep', reason: '面板显式钉住，保留你的选择' })
+
+  // The user changed again: drop the pin and let the schedule act.
+  assert.deepEqual(decideSessionAction({
+    slotChanged: true, current: { provider: 'p', model: 'Y' }, previous: 'p/X', target, explicitKey: 'p/X',
+  }), { action: 'proceed', dropExplicit: true })
 })
